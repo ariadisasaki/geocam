@@ -4,9 +4,13 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const captureBtn = document.getElementById("capture");
 const projectInput = document.getElementById("projectName");
+const logoInput = document.getElementById("logoInput");
 
 let latitude=null, longitude=null, accuracy=0;
 let heading=0;
+let locationName="Mencari lokasi...";
+let userLogo=null;
+
 const SECRET_SALT="GEOCAM_SECURE_V3";
 
 
@@ -14,18 +18,28 @@ const SECRET_SALT="GEOCAM_SECURE_V3";
 navigator.mediaDevices.getUserMedia({
   video:{ facingMode:"environment" }
 })
-.then(stream=>{
-  video.srcObject=stream;
-})
-.catch(err=>{
-  alert("Camera error: "+err.message);
+.then(stream=> video.srcObject=stream)
+.catch(err=> alert("Camera error: "+err.message));
+
+
+// ================= LOAD CUSTOM LOGO =================
+logoInput.addEventListener("change", function(){
+  const file=this.files[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+  reader.onload=function(e){
+    userLogo=new Image();
+    userLogo.src=e.target.result;
+  }
+  reader.readAsDataURL(file);
 });
 
 
 // ================= GPS =================
 if(navigator.geolocation){
   navigator.geolocation.watchPosition(
-    pos=>{
+    async pos=>{
       latitude=pos.coords.latitude;
       longitude=pos.coords.longitude;
       accuracy=pos.coords.accuracy;
@@ -38,10 +52,23 @@ if(navigator.geolocation){
 
       document.getElementById("datetime").innerText =
         `📅 ${new Date().toLocaleString()}`;
+
+      // Reverse geocoding
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+      .then(res=>res.json())
+      .then(data=>{
+        const addr=data.address;
+        const desa=addr.village || addr.town || addr.city || "";
+        const kab=addr.county || "";
+        const prov=addr.state || "";
+        const negara=addr.country || "";
+
+        locationName=`📍 ${desa}, ${kab}, ${prov}, ${negara}`;
+        document.getElementById("coords").innerText=locationName;
+      });
+
     },
-    err=>{
-      console.log("GPS error:",err);
-    },
+    err=>console.log(err),
     {enableHighAccuracy:true}
   );
 }
@@ -51,8 +78,7 @@ if(navigator.geolocation){
 window.addEventListener("deviceorientation", e=>{
   if(e.alpha!==null){
     heading=Math.round(e.alpha);
-    document.getElementById("heading").innerText =
-      `🧭 ${heading}°`;
+    document.getElementById("heading").innerText=`🧭 ${heading}°`;
   }
 });
 
@@ -75,7 +101,6 @@ function formatFilename(date){
 
 
 // ================= CAPTURE =================
-if(captureBtn){
 captureBtn.addEventListener("click", async ()=>{
 
   if(!latitude || !longitude){
@@ -90,27 +115,31 @@ captureBtn.addEventListener("click", async ()=>{
   ctx.drawImage(video,0,0);
 
   ctx.fillStyle="rgba(0,0,0,0.6)";
-  ctx.fillRect(20,20,canvas.width-40,200);
+  ctx.fillRect(20,20,canvas.width-40,220);
 
   ctx.fillStyle="white";
   ctx.font="18px Arial";
 
   const now=new Date();
   const nowISO=now.toISOString();
-  const safeHeading=heading?heading:0;
 
-  ctx.fillText(`${projectInput.value||"-"}`,40,60);
-  ctx.fillText(`🧭 ${safeHeading}°`,40,90);
+  ctx.fillText(`Proyek: ${projectInput.value||"-"}`,40,60);
+  ctx.fillText(`🧭 ${heading||0}°`,40,90);
   ctx.fillText(`📡 ±${Math.round(accuracy)} m`,40,120);
-  ctx.fillText(`📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,40,150);
+  ctx.fillText(locationName,40,150);
   ctx.fillText(`📅 ${nowISO}`,40,180);
+
+  // Draw logo if exists
+  if(userLogo){
+    ctx.drawImage(userLogo,canvas.width-150,canvas.height-150,120,120);
+  }
 
   const rawData=`${latitude}${longitude}${nowISO}${SECRET_SALT}`;
   const hash=await sha256(rawData);
 
-  QRCode.toCanvas(hash,{width:120},(err,qrCanvas)=>{
+  QRCode.toCanvas(hash,{width:100},(err,qrCanvas)=>{
     if(!err){
-      ctx.drawImage(qrCanvas,canvas.width-150,40);
+      ctx.drawImage(qrCanvas,canvas.width-130,40);
     }
 
     const link=document.createElement("a");
@@ -120,6 +149,5 @@ captureBtn.addEventListener("click", async ()=>{
   });
 
 });
-}
 
 });
