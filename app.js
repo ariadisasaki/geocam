@@ -60,7 +60,7 @@ function getDirection(deg){
   const dirs=["N","NE","E","SE","S","SW","W","NW"];
   return dirs[Math.round(deg/45)%8];
 }
-window.addEventListener("deviceorientationabsolute", e=>{
+window.addEventListener("deviceorientation", e=>{
   if(e.alpha!=null){
     heading = 360 - e.alpha;
     document.getElementById("heading").innerText =
