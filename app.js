@@ -13,7 +13,6 @@ let userLogo=null;
 
 const SECRET_SALT="GEOCAM_SECURE_V3";
 
-
 // ================= CAMERA =================
 navigator.mediaDevices.getUserMedia({
   video:{ facingMode:"environment" }
@@ -123,11 +122,11 @@ captureBtn.addEventListener("click", async ()=>{
   const now=new Date();
   const nowISO=now.toISOString();
 
-  ctx.fillText(`Proyek: ${projectInput.value||"-"}`,40,60);
+  ctx.fillText(`${projectInput.value||"-"}`,40,60);
   ctx.fillText(`🧭 ${heading||0}°`,40,90);
   ctx.fillText(`📡 ±${Math.round(accuracy)} m`,40,120);
-  ctx.fillText(locationName,40,150);
   ctx.fillText(`📅 ${nowISO}`,40,180);
+  ctx.fillText(locationName,40,150);
 
   // Draw logo if exists
   if(userLogo){
