@@ -90,6 +90,12 @@ function formatFilename(date){
 
 // ================= CAPTURE =================
 captureBtn.addEventListener("click", async ()=>{
+
+  if(!latitude || !longitude){
+    alert("GPS belum terkunci. Tunggu beberapa detik.");
+    return;
+  }
+
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   const ctx = canvas.getContext("2d");
@@ -104,7 +110,7 @@ captureBtn.addEventListener("click", async ()=>{
 
   const now = new Date();
   const nowISO = now.toISOString();
-  const project = projectInput.value;
+  const project = projectInput.value || "-";
 
   ctx.fillText(`Proyek: ${project}`,40,60);
   ctx.fillText(`🧭 ${heading.toFixed(0)}° ${getDirection(heading)}`,40,90);
@@ -131,7 +137,6 @@ captureBtn.addEventListener("click", async ()=>{
     link.click();
   });
 });
-
 // ================= SERVICE WORKER =================
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('service-worker.js');
