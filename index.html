@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoCam Pro</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#ff6600">
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="camera-container">
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
+
+  <div class="overlay">
+    <input type="text" id="projectName" placeholder="Nama Proyek...">
+    <input type="file" id="logoInput" accept="image/*">
+
+    <div id="heading">🧭 --°</div>
+    <div id="accuracy">📡 --</div>
+    <div id="elevation">⛰ --</div>
+    <div id="coords">📍 --</div>
+    <div id="datetime">📅 --</div>
+
+    <div class="watermark">GeoCam Pro – Secure Mode</div>
+  </div>
+
+  <button id="captureBtn">📸</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
