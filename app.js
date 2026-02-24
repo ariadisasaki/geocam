@@ -1,42 +1,63 @@
+document.addEventListener("DOMContentLoaded", () => {
+
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const captureBtn = document.getElementById("capture");
-const projectInput = document.getElementById("project");
+const projectInput = document.getElementById("projectName");
 
 let latitude=null, longitude=null, accuracy=0;
 let heading=0;
 const SECRET_SALT="GEOCAM_SECURE_V3";
 
 
-// CAMERA
-navigator.mediaDevices.getUserMedia({ video:{ facingMode:"environment" }})
-.then(stream=> video.srcObject=stream)
-.catch(err=> alert("Camera error: "+err));
+// ================= CAMERA =================
+navigator.mediaDevices.getUserMedia({
+  video:{ facingMode:"environment" }
+})
+.then(stream=>{
+  video.srcObject=stream;
+})
+.catch(err=>{
+  alert("Camera error: "+err.message);
+});
 
 
-// GPS
+// ================= GPS =================
 if(navigator.geolocation){
   navigator.geolocation.watchPosition(
     pos=>{
       latitude=pos.coords.latitude;
       longitude=pos.coords.longitude;
       accuracy=pos.coords.accuracy;
+
+      document.getElementById("coords").innerText =
+        `📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+
+      document.getElementById("accuracy").innerText =
+        `📡 ±${Math.round(accuracy)} m`;
+
+      document.getElementById("datetime").innerText =
+        `📅 ${new Date().toLocaleString()}`;
     },
-    err=> console.log("GPS error:",err),
-    {enableHighAccuracy:true,maximumAge:0,timeout:10000}
+    err=>{
+      console.log("GPS error:",err);
+    },
+    {enableHighAccuracy:true}
   );
 }
 
 
-// COMPASS
+// ================= COMPASS =================
 window.addEventListener("deviceorientation", e=>{
   if(e.alpha!==null){
     heading=Math.round(e.alpha);
+    document.getElementById("heading").innerText =
+      `🧭 ${heading}°`;
   }
 });
 
 
-// SHA256
+// ================= SHA256 =================
 async function sha256(text){
   const buf=new TextEncoder().encode(text);
   const hash=await crypto.subtle.digest("SHA-256",buf);
@@ -46,15 +67,16 @@ async function sha256(text){
 }
 
 
-// FILENAME
+// ================= FILENAME =================
 function formatFilename(date){
   const pad=n=>n.toString().padStart(2,"0");
   return `GeoCamPro_${date.getFullYear()}${pad(date.getMonth()+1)}${pad(date.getDate())}_${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}.jpg`;
 }
 
 
-// CAPTURE
-captureBtn.addEventListener("click",async ()=>{
+// ================= CAPTURE =================
+if(captureBtn){
+captureBtn.addEventListener("click", async ()=>{
 
   if(!latitude || !longitude){
     alert("GPS belum terkunci...");
@@ -64,6 +86,7 @@ captureBtn.addEventListener("click",async ()=>{
   canvas.width=video.videoWidth;
   canvas.height=video.videoHeight;
   const ctx=canvas.getContext("2d");
+
   ctx.drawImage(video,0,0);
 
   ctx.fillStyle="rgba(0,0,0,0.6)";
@@ -95,5 +118,8 @@ captureBtn.addEventListener("click",async ()=>{
     link.href=canvas.toDataURL("image/jpeg",0.95);
     link.click();
   });
+
+});
+}
 
 });
