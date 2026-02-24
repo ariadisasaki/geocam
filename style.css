@@ -1,3 +1,11 @@
+/* ===== GLOBAL ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: black;
+}
+
+/* ===== CONTAINER ===== */
 .camera-container {
   position: relative;
   width: 100%;
@@ -5,16 +13,19 @@
   overflow: hidden;
 }
 
+/* ===== VIDEO ===== */
 video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* ===== CANVAS ===== */
 canvas {
   display: none;
 }
 
+/* ===== OVERLAY ===== */
 .overlay {
   position: absolute;
   top: 10px;
@@ -24,7 +35,26 @@ canvas {
   padding: 15px;
   border-radius: 15px;
   color: white;
+  font-size: 14px;
   z-index: 2;
+}
+
+/* ===== INPUT STYLE ===== */
+.overlay input[type="text"],
+.overlay input[type="file"] {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 6px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+}
+
+/* ===== WATERMARK ===== */
+.watermark {
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 /* ===== FIX TOMBOL KAMERA ===== */
@@ -41,8 +71,9 @@ canvas {
   background: #ff6600;
   color: white;
   cursor: pointer;
-  z-index: 5; /* HARUS lebih tinggi dari overlay */
+  z-index: 5; /* lebih tinggi dari overlay */
   box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  transition: 0.2s ease;
 }
 
 #capture:active {
