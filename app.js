@@ -99,7 +99,7 @@ captureBtn.addEventListener("click", async ()=>{
   const nowISO=now.toISOString();
   const safeHeading=heading?heading:0;
 
-  ctx.fillText(`Caption: ${projectInput.value||"-"}`,40,60);
+  ctx.fillText(`${projectInput.value||"-"}`,40,60);
   ctx.fillText(`🧭 ${safeHeading}°`,40,90);
   ctx.fillText(`📡 ±${Math.round(accuracy)} m`,40,120);
   ctx.fillText(`📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,40,150);
