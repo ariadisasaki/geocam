@@ -11,6 +11,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
+
 <body>
 
 <div class="camera-container">
@@ -18,16 +19,18 @@
   <canvas id="canvas"></canvas>
 
   <div class="overlay">
-    <input type="text" id="projectName" placeholder="Ketik caption foto di sini..">
+    <input type="text" id="projectName" placeholder="Ketik keterangan foto di sini..">
     <input type="file" id="logoInput" accept="image/*">
 
+    <div id="datetime">📅 --</div>
     <div id="heading">🧭 --°</div>
     <div id="accuracy">📡 --</div>
-    <div id="elevation">⛰ --</div>
     <div id="coords">📍 --</div>
-    <div id="datetime">📅 --</div>
+    <div id="locationName">📍 --</div>
 
-    <div class="watermark">GeoCam Pro – Secure Mode</div>
+    <div class="watermark">
+      GeoCam Pro – Secure Mode
+    </div>
   </div>
 
   <button id="capture">📸</button>
