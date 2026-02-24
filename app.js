@@ -13,6 +13,7 @@ let userLogo=null;
 
 const SECRET_SALT="GEOCAM_SECURE_V3";
 
+
 // ================= CAMERA =================
 navigator.mediaDevices.getUserMedia({
   video:{ facingMode:"environment" }
@@ -21,7 +22,7 @@ navigator.mediaDevices.getUserMedia({
 .catch(err=> alert("Camera error: "+err.message));
 
 
-// ================= LOAD CUSTOM LOGO =================
+// ================= LOAD LOGO =================
 logoInput.addEventListener("change", function(){
   const file=this.files[0];
   if(!file) return;
@@ -53,9 +54,12 @@ if(navigator.geolocation){
         `📅 ${new Date().toLocaleString()}`;
 
       // Reverse geocoding
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
-      .then(res=>res.json())
-      .then(data=>{
+      try{
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
+        const data = await res.json();
+
         const addr=data.address;
         const desa=addr.village || addr.town || addr.city || "";
         const kab=addr.county || "";
@@ -63,8 +67,11 @@ if(navigator.geolocation){
         const negara=addr.country || "";
 
         locationName=`📍 ${desa}, ${kab}, ${prov}, ${negara}`;
-        document.getElementById("coords").innerText=locationName;
-      });
+        document.getElementById("locationName").innerText = locationName;
+
+      }catch(e){
+        console.log("Reverse geocoding error", e);
+      }
 
     },
     err=>console.log(err),
@@ -114,7 +121,7 @@ captureBtn.addEventListener("click", async ()=>{
   ctx.drawImage(video,0,0);
 
   ctx.fillStyle="rgba(0,0,0,0.6)";
-  ctx.fillRect(20,20,canvas.width-40,220);
+  ctx.fillRect(20,20,canvas.width-40,260);
 
   ctx.fillStyle="white";
   ctx.font="18px Arial";
@@ -123,12 +130,13 @@ captureBtn.addEventListener("click", async ()=>{
   const nowISO=now.toISOString();
 
   ctx.fillText(`${projectInput.value||"-"}`,40,60);
+  ctx.fillText(`📅 ${nowISO}`,40,210);
   ctx.fillText(`🧭 ${heading||0}°`,40,90);
   ctx.fillText(`📡 ±${Math.round(accuracy)} m`,40,120);
-  ctx.fillText(`📅 ${nowISO}`,40,180);
-  ctx.fillText(locationName,40,150);
+  ctx.fillText(`📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,40,150);
+  ctx.fillText(locationName,40,180);
 
-  // Draw logo if exists
+  // Logo
   if(userLogo){
     ctx.drawImage(userLogo,canvas.width-150,canvas.height-150,120,120);
   }
