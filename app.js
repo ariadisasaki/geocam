@@ -130,12 +130,12 @@ captureBtn.addEventListener("click", async ()=>{
   const nowISO=now.toISOString();
 
   ctx.fillText(`${projectInput.value||"-"}`,40,60);
+  ctx.fillText(`📅 ${nowISO}`,40,210);
   ctx.fillText(`🧭 ${heading||0}°`,40,90);
   ctx.fillText(`📡 ±${Math.round(accuracy)} m`,40,120);
   ctx.fillText(`📍 ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,40,150);
   ctx.fillText(locationName,40,180);
-  ctx.fillText(`📅 ${nowISO}`,40,210);
-
+  
   // Logo
   if(userLogo){
     ctx.drawImage(userLogo,canvas.width-150,canvas.height-150,120,120);
